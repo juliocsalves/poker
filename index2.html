@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Prova AsseInfo - Poker</title>
+    
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">   
+
+    <script type="text/javascript">    	
+    	var cartas = [];
+    	var mao1 = [];
+    	var mao2 = [];
+    	var verificaCartas1 = [];
+    	var verificaCartas2 = [];
+    	var jogo1 = '';
+    	var jogo2 = '';
+    	var cartaMaior = '';
+    	var dupla = '';
+        var vencedor = '';
+    	
+
+    	function jogar(){
+    		cartas = [
+    			[2, 'D', 'H', 'S', 'C'],
+    			[3, 'D', 'H', 'S', 'C'],
+    			[4, 'D', 'H', 'S', 'C'],
+    			[5, 'D', 'H', 'S', 'C'],
+    			[6, 'D', 'H', 'S', 'C'],
+    			[7, 'D', 'H', 'S', 'C'],
+    			[8, 'D', 'H', 'S', 'C'],
+    			[9, 'D', 'H', 'S', 'C'],
+    			[10, 'D', 'H', 'S', 'C'],
+    			['V', 'D', 'H', 'S', 'C'],
+    			['D', 'D', 'H', 'S', 'C'],
+    			['R', 'D', 'H', 'S', 'C'],
+    			['A', 'D', 'H', 'S', 'C'],
+    		]; 
+
+    		for(i=0; i<10; i++){
+    			if (i >= 5) {
+    				carta = cartas[Math.floor(Math.random() * cartas.length)]; //escolhe o numero da carta de forma randomica
+    				naipeCarta = carta[Math.floor(Math.random() * carta.length)]; // escolhe de forma randomica o naipe da carta 
+    				mao1.push([carta[0], naipeCarta]);
+    			} else{
+    				carta = cartas[Math.floor(Math.random() * cartas.length)]; //escolhe o numero da carta de forma randomica
+    				naipeCarta = carta[Math.floor(Math.random() * carta.length)]; // escolhe de forma randomica o naipe da carta 
+    				mao2.push([carta[0], naipeCarta]);
+    			}
+    			
+    		}
+
+    		document.getElementById('jogador1').value = mao1[0][0] + '-' + mao1[0][1] + ';' + mao1[1][0] + '-' + mao1[1][1] + ';' +
+    													mao1[2][0] + '-' + mao1[2][1] + ';' + mao1[3][0] + '-' + mao1[3][1] + ';' +
+    													mao1[4][0] + '-' + mao1[4][1];
+    		document.getElementById('jogador2').value = mao2[0][0] + '-' + mao2[0][1] + ';' + mao2[1][0] + '-' + mao2[1][1] + ';' +
+    													mao2[2][0] + '-' + mao2[2][1] + ';' + mao2[3][0] + '-' + mao2[3][1] + ';' +
+    													mao2[4][0] + '-' + mao2[4][1];
+
+    		cartaMaiorMao1 = cartasDiferentes(mao1);    	
+    		duplaMao1 = ehDupla(mao1);            
+    		trincaMao1 = ehTrinca(mao1);            
+    		quadraMao1 = ehQuadra(mao1);
+    		streetFlushMao1 = streetFlush(mao1);
+
+            cartaMaiorMao2 = cartasDiferentes(mao2);        
+            duplaMao2 = ehDupla(mao2);
+            trincaMao2 = ehTrinca(mao2);            
+            quadraMao2 = ehQuadra(mao2);
+            streetFlushMao2 = streetFlush(mao2);
+
+            resultadoMao1 = cartaMaiorMao1 + duplaMao1 + trincaMao1 + quadraMao1 + streetFlushMao1;
+            resultadoMao2 = cartaMaiorMao2 + duplaMao2 + trincaMao2 + quadraMao2 + streetFlushMao2;
+
+            if (resultadoMao1 > resultadoMao2) {
+                vencedor = 'Jogador 1 venceu!';
+            } else if (resultadoMao1 < resultadoMao2 ) {
+                vencedor = 'Jogador 2 venceu!';
+
+            } else if (resultadoMao1 == resultadoMao2) {
+                
+                //maior carta
+                if (resultadoMao1 == 1) {
+                    maiorCartaMao1 = maiorCarta(mao1);
+                    maiorCartaMao2 = maiorCarta(mao2);
+
+                    if (maiorCartaMao1[0] > maiorCartaMao2[0]) {
+                        vencedor = 'Jogador 1 venceu';
+                    } else if ( maiorCartaMao1[0] < maiorCartaMao2[0]){
+                        vencedor = 'Jogador 2 venceu';
+                    } else if ( maiorCartaMao1[0] == maiorCartaMao2[0]){
+                        cartaMJogador1 = maiorCartaMao1;
+                        cartaMJogador2 = maiorCartaMao2;
+
+
+                        if (cartaMJogador1 > cartaMJogador2) {
+                            vencedor = 'Jogador 1 venceu';
+                        } else if (cartaMJogador1 < cartaMJogador2) {
+                            vencedor = 'Jogador 2 venceu';
+                        } else if (cartaMJogador1 == cartaMJogador2){
+                            naipeJogador1 = verificaNaipes(cartaMJogador1);
+                            naipeJogador2 = verificaNaipes(cartaMJogador2);
+
+                            if (naipeJogador1 > naipeJogador2) { 
+                                vencedor = 'Jogador 1 venceu';
+                            } else if (naipeJogador1 < naipeJogador2){
+                                vencedor = 'Jogador 2 venceu';
+                            }
+                        }
+
+                    }
+                }
+
+                //dupla
+                if (resultadoMao1 == 2) {
+                    duplaJogo1 = pegaValorDupla(mao1);
+                    duplaJogo2 = pegaValorDupla(mao2);
+
+                    if (duplaJogo1[0] > duplaJogo2[0]) {
+                        vencedor = 'Jogador 1 venceu';
+                    } else if (duplaJogo1[0] < duplaJogo2[0]) {
+                        vencedor = 'Jogador 2 venceu';
+                    } else if (duplaJogo1[0] == duplaJogo2[0]) {
+                        if (verificaNaipes(duplaJogo1[1]) > verificaNaipes(duplaJogo2[1])) {
+                            vencedor = 'Jogador 1 venceu';
+                        } else {
+                            vencedor = 'Jogador 2 venceu';
+                        }
+                    }
+                }
+
+                //trinca
+                if (resultadoMao1 == 3) {
+                    trincaJogo1 = pegaValorTrinca(mao1);
+                    trincaJogo2 = pegaValorTrinca(mao2);
+
+                    if (trincaJogo1 > trincaJogo2){
+                        vencedor = 'Jogador 1 venceu';
+                    } else if (trincaJogo1 < trincaJogo2) {
+                        vencedor = 'Jogador 2 venceu';
+                    } else if (trincaJogo1 == trincaJogo2){
+                        if (verificaNaipes(trincaJogo1[1]) > verificaNaipes(trincaJogo1[1])) {
+                            vencedor = 'Jogador 1 venceu';
+                        } else {
+                            vencedor = 'Jogador 2 venceu';
+                        }
+                    }
+                }
+
+                //quadra
+                if (resultadoMao1 == 4) {
+                    quadraJogo1 == pegaValorQuadra(mao1);
+                    quadraJogo2 == pegaValorQuadra(mao2);
+
+                    if (quadraJogo1 > quadraJogo2) {
+                        vencedor = 'Jogador 1 venceu';
+                    } else if(quadraJogo1 < quadraJogo2){
+                        vencedor = 'Jogador 2 venceu';
+                    } else if (quadraJogo1 == quadraJogo2){
+                        if (verificaNaipes(quadraJogo1[1]) > verificaNaipes(quadraJogo2[1])){
+                            vencedor = 'Jogador 1 venceu';
+                        } else {
+                            vencedor = 'Jogador 2 venceu';
+                        }
+                    }
+                }
+                //street flush
+                if (resultadoMao1 == 6){
+                    flush1 = maiorCarta (mao1);
+                    flush2 = maiorCarta (mao2);
+
+                    if (flush1[0] > flush2[0]){
+                        vencedor = 'Jogador 1 venceu';
+                    } else if (flush1[0] < flush2[0]){
+                        vencedor = 'Jogador 2 venceu';
+                    } else if (flush1[0] == flush2[0]){
+                        if (verificaNaipes(flush1) > verificaNaipes(flush2)){
+                            vencedor = 'Jogador 1 venceu';
+                        } else {
+                            vencedor = 'Jogador2 venceu';
+                        }
+                    }
+                }
+
+            }                        
+            
+            document.getElementById('vencedor').innerHTML = vencedor;			
+						
+    	}
+
+    	function cartasDiferentes(mao) {
+    		carta1 = mao[0];
+    		carta1 = verificaCartas(carta1);
+    		carta2 = mao[1];
+    		carta2 = verificaCartas(carta2);
+    		carta3 = mao[2];
+    		carta3 = verificaCartas(carta3);
+    		carta4 = mao[3];
+    		carta4 = verificaCartas(carta4);
+    		carta5 = mao[4];
+    		carta5 = verificaCartas(carta5);
+
+    		if ( carta1[0] != carta2[0] && carta1[0] != carta3[0] && carta1[0] != carta4[0] && carta1[0] != carta5[0] && 
+    			 carta2[0] != carta3[0] && carta2[0] != carta4[0] && carta2[0] != carta5[0] &&
+    			 carta3[0] != carta4[0] && carta3[0] != carta5[0] && carta4[0] != carta5[0] ) {
+    			return 1;
+    		} else {
+    			return 0;
+    		}
+    	}
+
+    	function ehDupla(mao) {
+    		carta1 = mao[0];
+    		carta1 = verificaCartas(carta1);
+    		carta2 = mao[1];
+    		carta2 = verificaCartas(carta2);
+    		carta3 = mao[2];
+    		carta3 = verificaCartas(carta3);
+    		carta4 = mao[3];
+    		carta4 = verificaCartas(carta4);
+    		carta5 = mao[4];
+    		carta5 = verificaCartas(carta5);
+
+    		if ( carta1[0] == carta2[0] || carta1[0] == carta3[0] || carta1[0] == carta4[0] || carta1[0] == carta5[0] || 
+    			 carta2[0] == carta3[0] || carta2[0] == carta4[0] || carta2[0] == carta5[0] ||
+    			 carta3[0] == carta4[0] || carta3[0] == carta5[0] || carta4[0] == carta5[0] ) {
+    			return 2;
+    		} else {
+    			return 0;
+    		}
+    	}
+
+    	function ehTrinca(mao) {
+    		carta1 = mao[0];
+    		carta1 = verificaCartas(carta1);
+    		carta2 = mao[1];
+    		carta2 = verificaCartas(carta2);
+    		carta3 = mao[2];
+    		carta3 = verificaCartas(carta3);
+    		carta4 = mao[3];
+    		carta4 = verificaCartas(carta4);
+    		carta5 = mao[4];
+    		carta5 = verificaCartas(carta5);
+
+    		if ( carta1[0] == carta2[0] && carta1[0] == carta3[0] || carta1[0] == carta2[0] && carta1[0] == carta4[0] || carta1[0] == carta2[0] && carta1[0] == carta5[0] ||
+    			 carta2[0] == carta3[0] && carta2[0] == carta4[0] || carta2[0] == carta3[0] && carta2[0] == carta5[0] || carta2[0] == carta4[0] && carta2[0] == carta5[0] ||
+    			 carta3[0] == carta4[0] && carta3[0] == carta5[0] || carta3[0] == carta4[0] && carta3[0] == carta1[0] || carta4[0] == carta5[0] && carta4[0] == carta1[0] ||
+                 carta5[0] == carta1[0] && carta5[0] == carta3[0] || carta5[0] == carta1[0] && carta5[0] == carta4[0] ) {
+    			return 3;
+    		} else {
+    			return 0;
+    		}
+    	}
+
+        function ehQuadra(mao){
+            carta1 = mao[0];
+            carta1 = verificaCartas(carta1);
+            carta2 = mao[1];
+            carta2 = verificaCartas(carta2);
+            carta3 = mao[2];
+            carta3 = verificaCartas(carta3);
+            carta4 = mao[3];
+            carta4 = verificaCartas(carta4);
+            carta5 = mao[4];
+            carta5 = verificaCartas(carta5);
+
+            if ( carta1[0] == carta2[0] && carta1[0] == carta3[0] && carta1[0] == carta4[0] || carta1[0] == carta2[0] && carta1[0] == carta3[0] && carta1[0] == carta5[0] ||
+                 carta2[0] == carta3[0] && carta2[0] == carta4[0] && carta2[0] == carta5[0] || carta3[0] == carta4[0] && carta3[0] == carta5[0] && carta3[0] == carta1[0] ||
+                 carta4[0] == carta5[0] && carta4[0] == carta1[0] && carta4[0] == carta2[0] || carta4[0] == carta5[0] && carta4[0] == carta1[0] && carta4[0] == carta3[0] ||
+                 carta5[0] == carta1[0] && carta5[0] == carta2[0] && carta5[0] == carta4[0] || carta5[0] == carta2[0] && carta5[0] == carta3[0] && carta5[0] == carta4[0] ) {
+                return 4;
+            } else {
+                return 0;
+            }
+        }
+
+        function streetFlush(mao){
+
+            maoEmOrdem = mao.sort();
+            carta1 = maoEmOrdem[0];
+            carta1 = verificaCartas(carta1);
+            carta2 = maoEmOrdem[1];
+            carta2 = verificaCartas(carta2);
+            carta3 = maoEmOrdem[2];
+            carta3 = verificaCartas(carta3);
+            carta4 = maoEmOrdem[3];
+            carta4 = verificaCartas(carta4);
+            carta5 = maoEmOrdem[4];
+            carta5 = verificaCartas(carta5);
+
+            if ( carta5[0] - carta4[0] == 1 && carta4[0] - carta3[0] == 1 && carta3[0] - carta2[0] == 1 && carta2[0] - carta1[0] == 1 ){
+                return 6;
+            } else {
+                return 0;
+            }
+        }
+
+    	function maiorCarta (mao){
+
+    		carta1 = mao[0];
+    		carta1 = verificaCartas(carta1);
+    		carta2 = mao[1];
+    		carta2 = verificaCartas(carta2);
+    		carta3 = mao[2];
+    		carta3 = verificaCartas(carta3);
+    		carta4 = mao[3];
+    		carta4 = verificaCartas(carta4);
+    		carta5 = mao[4];
+    		carta5 = verificaCartas(carta5);
+
+
+			if ( carta1 > carta2 && carta1 > carta3 && carta1 > carta4 && carta1 > carta5 ) {    			
+    			return carta1;
+    		} else if ( carta2 > carta1 && carta2 > carta3 && carta2 > carta4 && carta2 > carta5 ) {
+    			return carta2;
+    		} else if ( carta3 > carta1 && carta3 > carta2 && carta3 > carta4 && carta3 > carta5 ){
+    			return carta3;
+    		} else if ( carta4 > carta1 && carta4 > carta2 && carta4 > carta3 && carta4 > carta5 ){
+    			return carta4;
+    		} else if ( carta5 > carta1 && carta5 > carta2 && carta5 > carta3 && carta5 > carta4 ){
+    			return carta5;
+    		}	
+    	}
+
+        function pegaValorDupla(mao){
+
+            carta1 = mao[0];
+            carta1 = verificaCartas(carta1);
+            carta2 = mao[1];
+            carta2 = verificaCartas(carta2);
+            carta3 = mao[2];
+            carta3 = verificaCartas(carta3);
+            carta4 = mao[3];
+            carta4 = verificaCartas(carta4);
+            carta5 = mao[4];
+            carta5 = verificaCartas(carta5);
+
+            if (carta1[0] == carta2[0]) {
+                return carta1;
+            } else if (carta1[0] == carta3[0]) {
+                return carta1;
+            } else if (carta1[0] == carta4[0]) {
+                return carta1;
+            } else if (carta1[0] == carta5[0]) {
+                return carta1;
+            } else if (carta2[0] == carta3[0]) {
+                return carta2;
+            } else if (carta2[0] == carta4[0]) {
+                return carta2;
+            } else if (carta2[0] == carta5[0]) {
+                return carta2;
+            } else if (carta3[0] == carta4[0]){
+                return carta3;
+            } else if (carta3[0] == carta5[0]){
+                return carta3;
+            } else if (carta4[0] == carta5[0]){
+                return  carta4;
+            }
+        }
+
+        function pegaValorTrinca(mao){
+            carta1 = mao[0];
+            carta1 = verificaCartas(carta1);
+            carta2 = mao[1];
+            carta2 = verificaCartas(carta2);
+            carta3 = mao[2];
+            carta3 = verificaCartas(carta3);
+            carta4 = mao[3];
+            carta4 = verificaCartas(carta4);
+            carta5 = mao[4];
+            carta5 = verificaCartas(carta5);
+
+            if (carta1[0] == carta2[0] && carta1[0] == carta3[0]){
+                return carta1;
+            } else if (carta1[0] == carta2[0] && carta1[0] == carta4[0]){
+                return carta1;
+            } else if (carta1[0] == carta2[0] && carta1[0] == carta5[0]){
+                return carta1;
+            } else if (carta2[0] == carta3[0] && carta2[0] == carta4[0]){
+                return carta2;
+            } else if (carta2[0] == carta3[0] && carta2[0] == carta5[0]){
+                return carta2;
+            } else if (carta2[0] == carta4[0] && carta2[0] == carta5[0]){
+                return carta2;
+            } else if (carta3[0] == carta4[0] && carta3[0] == carta5[0]){
+                return carta3;
+            } else if (carta3[0] == carta4[0] && carta3[0] == carta1[0]){
+                return carta3;
+            } else if (carta4[0] == carta5[0] && carta4[0] == carta1[0]){
+                return carta4;
+            } else if (carta5[0] == carta1[0] && carta5[0] == carta3[0]){
+                return carta5;
+            } else if (carta5[0] == carta1[0] && carta5[0] == carta4[0]){
+                return carta5;
+            }
+        }
+
+        function pegaValorQuadra(mao){
+            carta1 = mao[0];
+            carta1 = verificaCartas(carta1);
+            carta2 = mao[1];
+            carta2 = verificaCartas(carta2);
+            carta3 = mao[2];
+            carta3 = verificaCartas(carta3);
+            carta4 = mao[3];
+            carta4 = verificaCartas(carta4);
+            carta5 = mao[4];
+            carta5 = verificaCartas(carta5);
+
+
+            if (carta1[0] == carta2[0] && carta1[0] == carta3[0] && carta1[0] == carta4[0]){
+                return carta1;
+            } else if (carta1[0] == carta2[0] && carta1[0] == carta3[0] && carta1[0] == carta5[0]){
+                return carta1;
+            } else if (carta2[0] == carta3[0] && carta2[0] == carta4[0] && carta2[0] == carta5[0]){
+                return carta2;
+            } else if (carta3[0] == carta4[0] && carta3[0] == carta5[0] && carta3[0] == carta1[0]){
+                return carta3;
+            } else if (carta4[0] == carta5[0] && carta4[0] == carta1[0] && carta4[0] == carta2[0]){
+                return carta4;
+            } else if (carta4[0] == carta5[0] && carta4[0] == carta1[0] && carta4[0] == carta3[0]){
+                return carta4;
+            } else if (carta5[0] == carta1[0] && carta5[0] == carta2[0] && carta5[0] == carta4[0]){
+                return carta5;
+            } else if (carta5[0] == carta2[0] && carta5[0] == carta3[0] && carta5[0] == carta4[0]){
+                return carta5;
+            }
+        }
+
+
+    	function verificaCartas(carta){
+    		if (carta == 'V'){
+    			valor = 11;
+    			return (valor);
+    		} else if (carta == 'D') {
+    			valor = 12;
+    			return (valor);
+    		} else if (carta == 'R') {
+    			valor = 13;
+    			return (valor);
+    		} else if( carta == 'A'){
+    			valor = 14;
+    			return (valor);
+    		} else {
+    			return carta;
+    		}    		
+    	} 
+
+        function verificaNaipes(carta){
+            if (carta[1] == 'D'){
+                valor = 1;
+                return (valor);
+            } else if (carta[1] == 'H') {
+                valor = 2;
+                return (valor[1]);
+            } else if (carta[1] == 'S') {
+                valor = 3;
+                return (valor);
+            } else if( carta[1] == 'C'){
+                valor = 4;
+                return (valor);
+            } else {
+                return carta;
+            }           
+        }
+
+    	function sequencia(){
+    		var num = document.getElementById('numero').value;     		
+    		if (num > 0) {
+    			var soma = 0;
+    			var media = 0;    			
+
+	    		sequencia_numero.push(num);
+	    		document.getElementById('numero').value = '';
+	    		document.getElementById('numero').focus();
+	    		document.getElementById('sequencia').value = sequencia_numero;
+
+	    		//maior e menor valor
+	    		var maior = Number.NEGATIVE_INFINITY;
+				var menor = Infinity;
+
+				sequencia_numero.forEach(function(item){
+				  if (Number(item) > maior) maior = item;
+				  if (Number(item) < menor) menor = item;
+				});
+
+				document.getElementById('maximo').value = maior;
+				document.getElementById('minimo').value = menor;
+				
+				//quantidade de números em array				
+				soma = sequencia_numero.length;              			 
+        		document.getElementById('numero_elementos').value = soma;
+
+        		//média dos itens
+        		for (i=0; i < sequencia_numero.length; i++){
+        			media = media + parseInt(sequencia_numero[i]);        			
+        		}
+				document.getElementById('media').value = media/soma;			
+			}
+    		
+    	}
+    </script>
+
+  </head>
+<body>
+	<header>
+		<center>
+			<h1>Poker</h1>
+		</center>
+	</header>
+
+	<section>
+		<hr>
+		<div class="container">
+			<div class="row">
+				<h4>Os naipes são:</h4> 
+				<li>Ouro (D),</li> 
+				<li>Copa (H),</li> 
+				<li>Espadas (S),</li>
+				<li>Paus (C)</li>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<center>
+						<h3><label for="jogador1">Jogador 1</label></h3>
+						<input type="text" id="jogador1" disabled="">                        
+					</center>
+				</div>
+				<div class="col-md-6">
+					<center>
+						<h3><label for="jogador2">Jogador 2</label></h3>
+						<input type="text" id="jogador2" disabled="">
+                        <label id='resultado'></label>
+					</center>
+				</div>
+
+			</div>
+
+			<div class="row">				
+				<br>
+				<h1>
+                    <center>
+                        <h1><label id='vencedor'></label></h1>
+                        <button class="btn btn-info" onclick="jogar()" style="width: 150px;">Jogar</button>
+                    </center>                    
+                </h1>	
+			</div>						
+		</div>
+		<hr>		
+	</section>
+
+	<footer>
+		<center>
+			<h6>Exercício resolvido em 15/04/2021</h6> 
+		</center>
+	</footer>
+</body>
+</html>
